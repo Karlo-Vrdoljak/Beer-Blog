@@ -4,13 +4,14 @@ const bcrypt = require("bcrypt");
 const saltRounds = 10;
 const jwt = require("jsonwebtoken");
 const fs = require("fs");
-
+const expressJwt = require('express-jwt');
 const SECRET_KEY = "c7ec74f3-2e9c-458d-add4-b7e37384d92e";
 
 const connection = {
-	whiteList: ["logoff", "login", "register"],
-	checkWhiteList: route => {
-		return connection.whiteList.some(wl => route.includes(wl));
+	useJwtMiddleware: function () {
+		return expressJwt({secret: SECRET_KEY, algorithms: ['HS256']}).unless({
+				path: ["/security/logoff", "/security/login", "/security/register", new RegExp('\/[a-zA-Z]+\/all'), new RegExp('\/[a-zA-Z]+\/one')]
+			})
 	},
 	dbSetup: {
 		createUsersIfNotExists: () => {
@@ -42,7 +43,6 @@ const connection = {
 		insertTableWithDefaults: table => {
 			return new Promise((resolve, reject) => {
 				const [tableCreateQuery, insertQuery] = fs.readFileSync(`./sql/${table}.sql`).toString().trim().split(";");
-				console.log(tableCreateQuery);
 				db.serialize(() => {
 					db.prepare(tableCreateQuery).run().finalize();
 					db.all(`SELECT * from ${table} limit 1`, async (err, rows) => {
@@ -123,7 +123,7 @@ const connection = {
 	},
 	createToken: data => {
 		const TWELVE_HOURS = Math.floor(Date.now() / 1000) + 60 * 60 * 12; // 30;
-		return jwt.sign({ exp: TWELVE_HOURS, data: data }, SECRET_KEY);
+		return jwt.sign({ exp: TWELVE_HOURS, data: data }, SECRET_KEY, {algorithm: 'HS256'});
 	},
 	extractToken: token => {
 		let auth = null;
@@ -146,4 +146,4 @@ const connection = {
 		});
 	},
 };
-module.exports = connection.init();
+module.exports = [connection.init(), db];
