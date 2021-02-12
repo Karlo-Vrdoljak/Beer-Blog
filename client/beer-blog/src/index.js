@@ -13,6 +13,7 @@ const config = {
   colorScheme:"red"
 }
 // 3. extend the theme
+// @ts-ignore
 const theme = extendTheme({ config })
 ReactDOM.render(
   <React.StrictMode>

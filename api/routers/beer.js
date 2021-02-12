@@ -36,6 +36,37 @@ router.get("/all", async (req, res) => {
 	});
 });
 
+router.get('/all/detailed', async (req, res) => {
+	const query = connection.queryPool.allBeersDetailed();
+	db.serialize(() => {
+		db.all(query, (err, rows) => {
+			if (err) {
+				console.error(err);
+				res.status(500).send(err);
+			}
+			// todo handle
+			res.send(rows);
+		});
+	});
+});
+
+router.get('/one/detailed', async (req, res) => {
+	if(req.query.pk) {
+		const query = connection.queryPool.oneBeerDetailed();
+		db.serialize(() => {
+			db.get(query, req.query.pk, (err, row) => {
+				if (err) {
+					console.error(err);
+					res.status(500).send(err);
+				}
+				// todo handle
+				res.send(row);
+			});
+		});
+	}
+});
+
+
 router.get("/one", async (req, res) => {
 	db.serialize(() => {
 		db.get("select * from beer where pkBeer = ?", req.query.pkBeer, (err, row) => {

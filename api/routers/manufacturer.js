@@ -36,6 +36,34 @@ router.get("/all", async (req, res) => {
 	});
 });
 
+router.get("/all/detailed", async (req, res) => {
+	let query = '';
+	let param = null;
+	if(req.query && req.query.pk) {
+		query = connection.queryPool.manufacturersBeersDetailed(req.query.pk);
+		param = req.query.pk;
+		return db.all(query, param, (err, rows) => {
+			if (err) {
+				console.error(err);
+				res.status(500).send(err);
+			}
+			// todo handle
+			res.send(rows);
+		});
+	}else {
+		query = connection.queryPool.manufacturersDetailed();
+		return db.all(query, (err, rows) => {
+			if (err) {
+				console.error(err);
+				res.status(500).send(err);
+			}
+			// todo handle
+			res.send(rows);
+		});
+	}
+});
+
+
 router.get("/one", async (req, res) => {
 	db.serialize(() => {
 		db.get("select * from manufacturer where pkManufacturer = ?", req.query.pkManufacturer, (err, row) => {

@@ -77,7 +77,7 @@ const connection = {
 		this.dbSetup.createUsersIfNotExists().catch(err => {
 			console.log("err", err);
 		});
-		Promise.all(["country", "currency", "beerType"].map(table => this.dbSetup.insertTableWithDefaults(table))).then(results => {
+		Promise.all(["country", "currency", "beerType", "brewer"].map(table => this.dbSetup.insertTableWithDefaults(table))).then(results => {
 			if (results.every(r => r == true)) this.dbSetup.insertTableWithDefaults("manufacturer").then(result => {
 					if (result) this.dbSetup.insertTableWithDefaults("beer");
 				});
@@ -145,5 +145,69 @@ const connection = {
 				});
 		});
 	},
+	queryPool: {
+		allBeersDetailed: () => {
+			return `select
+			b.name as beerName,
+			b.price as beerPrice,
+			b.alcoholPerc as beerAlcoholPerc,
+			b.imageUrl as beerImageUrl,
+			b.pkBeer,
+			bt.color,
+			bt.style,
+			bt.imgUrl as beerTypeImgUrl,
+			bt.pkBeerType,
+			c.symbol as currencySymbol,
+			c.name as currencyName,
+			c.code as currencyCode,
+			c.name_plural as currencyNamePlural,
+			c.pkCurrency,
+			m.pkManufacturer,
+			m.yearOfEstablishment as manufYearOfEstablishment,
+			m.description as manufDescription,
+			m.logoUrl as manufLogoUrl,	
+			m.fbUrl as manufFbUrl,	
+			m.instagramUrl as manufInstagramUrl,
+			m.pageUrl as manufPageUrl,
+			m.name as manufName,
+			co.name as countryName,
+			co.code as countryCode
+			from beer b
+			left join beerType bt on bt.pkBeerType = b.pkBeer
+			left join currency c on c.pkCurrency = b.pkCurrency
+			left join manufacturer m on m.pkManufacturer = b.pkManufacturer
+			left join country co on m.pkCountry = co.pkCountry`
+		},
+
+		oneBeerDetailed: function () {
+			return this.allBeersDetailed() + `
+				where b.pkBeer = ?`;
+		},
+		manufacturersDetailed: function () {
+			return `select 
+			m.pkManufacturer,
+			m.yearOfEstablishment,
+			m.pkCountry,
+			m.description,
+			m.logoUrl,
+			m.fbUrl,
+			m.instagramUrl,
+			m.pageUrl,
+			m.name,
+			co.name as countryName,
+			co.code as countryCode
+			from manufacturer m
+			left join country co on m.pkCountry = co.pkCountry`;
+		},
+		oneManufacturerDetailed: function () {
+			return this.manufacturersDetailed() + `
+				where m.pkManufacturer = ?`;
+		},
+		manufacturersBeersDetailed: function() {
+			return this.allBeersDetailed() + `
+				where m.pkManufacturer = ?`;
+		}
+
+	}
 };
 module.exports = [connection.init(), db];
