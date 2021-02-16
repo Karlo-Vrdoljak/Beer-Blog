@@ -19,6 +19,20 @@ class AppService {
 			.then(response => response.json())
 			.then(data => data);
 	}
+	getUsers() {
+		return fetch(this.config.API_URL + '/user/all')
+			.then(response => response.json())
+			.then(data => data);
+	}
+	registerBrewey(data, auth) {
+		return fetch(this.config.API_URL + "/brewer/insert", {
+            method: "POST",
+            headers: {'Content-type': 'application/json', Authorization: auth },
+			body: JSON.stringify(data),
+		})
+			.then(response => response.json())
+			.then(data => data);
+	}
 }
 
 export default AppService;

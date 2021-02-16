@@ -11,7 +11,7 @@ function LoggedInAs(props) {
 	if (loginData && loginData.auth) {
 		return (
 			<Heading pl="2" size="md">
-				{loginData.username}
+				 &bull; <Box as="span" color="yellow.300">{loginData.username}</Box>
 			</Heading>
 		);
 	} else {

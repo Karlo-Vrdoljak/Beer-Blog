@@ -14,6 +14,7 @@ app.use('/beer', require('./routers/beer'));
 app.use('/beerType', require('./routers/beerType'));
 app.use('/manufacturer', require('./routers/manufacturer'));
 app.use('/user', require('./routers/user'));
+app.use('/brewer', require('./routers/brewer'));
 
 
 app.use('/security', require('./routers/security'));

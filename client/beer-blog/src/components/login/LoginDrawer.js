@@ -4,13 +4,20 @@ import AuthContext from "context/AuthProvider";
 import { observer } from "mobx-react";
 import React, { useContext, useEffect, useState } from "react";
 import AppService from "service/app.service";
+import ServiceContext from "context/ServiceProvider";
+import {useLocation, useHistory} from "react-router-dom";
 
-const appService = new AppService();
+
 const LoginDrawer = observer(() => {
+	const appService = React.useContext(ServiceContext);
 	const authUser = useContext(AuthContext);
 	const toast = useToast();
 	const { isOpen, onOpen, onClose } = useDisclosure();
 	const firstField = React.useRef();
+	let location = useLocation();
+	const history = useHistory();
+	let { from } = location.state || { from: { pathname: "/" } };
+
 	const [user, setuser] = useState(() => {
 		return { username: "", password: "", auth: null };
 	});
@@ -21,6 +28,9 @@ const LoginDrawer = observer(() => {
 				if (!auth.err) {
 					authUser.setUser({ ...user, auth: auth });
 					setuser({ username: "", password: "", auth: null });
+					if (from.pathname.includes('/admin/')) {
+						history.push(from.pathname);
+					}
 					setTimeout(() => {
 						onClose();
 					}, 200);
@@ -45,7 +55,7 @@ const LoginDrawer = observer(() => {
 
 	return (
 		<>
-			<Button colorScheme="yellow" onClick={onOpen}>
+			<Button id="sign-in-btn" colorScheme="yellow" onClick={onOpen}>
 				Sign in
 			</Button>
 			<Drawer isOpen={isOpen} placement="right" initialFocusRef={firstField} onClose={onClose}>

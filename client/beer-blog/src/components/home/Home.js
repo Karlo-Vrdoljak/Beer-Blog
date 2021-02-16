@@ -3,12 +3,13 @@ import { Box, SimpleGrid } from "@chakra-ui/react";
 import Beer from "components/beer/Beer";
 import { observer } from "mobx-react";
 import React, { useEffect, useState } from "react";
-import AppService from "service/app.service";
+import ServiceContext from "context/ServiceProvider";
 
-const appService = new AppService();
+
 
 let interval = null;
 const Home = observer(() => {
+	const appService = React.useContext(ServiceContext);
     const [beers, setBeers] = useState(() => []);
     
 	useEffect(() => {
@@ -29,7 +30,7 @@ const Home = observer(() => {
 	console.log(beers);
 	return (
 		<Box m="4" h="90vh" overflow="auto">
-			<SimpleGrid m="4" columns={[1, 2, 3]} spacing="6">
+			<SimpleGrid m="4" justifyItems="center" columns={[1, 2, 3]} spacing="6">
 				<Beers></Beers>
 			</SimpleGrid>
 		</Box>

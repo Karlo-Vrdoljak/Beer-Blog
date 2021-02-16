@@ -5,11 +5,11 @@ import { observer } from "mobx-react";
 import React, { useEffect, useState } from "react";
 import { FaBeer, FaFacebook, FaInstagram } from "react-icons/fa";
 import { Link, useParams } from "react-router-dom";
-import AppService from "../../service/app.service";
+import ServiceContext from "context/ServiceProvider";
 
-const appService = new AppService();
 
-function BeerImage(props) {
+
+export function BeerImage(props) {
 	return (
 		<Flex background="white" borderTopRadius="lg">
 			<Center w="100%">
@@ -19,7 +19,8 @@ function BeerImage(props) {
 	);
 }
 
-function Beer(props) {
+export function Beer(props) {
+
 	const beer = props.beer;
 	return (
 		<Box p="6">
@@ -79,6 +80,8 @@ function BeerType(props) {
 }
 
 const SingleBeer = observer(() => {
+	const appService = React.useContext(ServiceContext);
+
 	// @ts-ignore
 	let { id } = useParams();
 

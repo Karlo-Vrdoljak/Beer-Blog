@@ -3,7 +3,7 @@ const [connection, db] = require("../sqlite.js");
 
 router.post("/insert", async (req, res) => {
 	db.serialize(() => {
-		db.run("INSERT INTO [manufacturer] (yearOfEstablishment,pkCountry,description,logoUrl,fbUrl,instagramUrl,pageUrl) values (?,?,?,?,?,?,?)", req.body.yearOfEstablishment, req.body.pkCountry, req.body.description, req.body.logoUrl, req.body.fbUrl, req.body.instagramUrl, req.body.pageUrl, function (err) {
+		db.run("INSERT INTO [manufacturer] (yearOfEstablishment,pkCountry,description,logoUrl,fbUrl,instagramUrl,pageUrl,name) values (?,?,?,?,?,?,?,?)", req.body.yearOfEstablishment, req.body.pkCountry, req.body.description, req.body.logoUrl, req.body.fbUrl, req.body.instagramUrl, req.body.pageUrl, req.body.name, function (err) {
 			if (err) {
 				console.error(err);
 				res.status(500).send(err);
@@ -37,9 +37,9 @@ router.get("/all", async (req, res) => {
 });
 
 router.get("/all/detailed", async (req, res) => {
-	let query = '';
+	let query = "";
 	let param = null;
-	if(req.query && req.query.pk) {
+	if (req.query && req.query.pk) {
 		query = connection.queryPool.manufacturersBeersDetailed(req.query.pk);
 		param = req.query.pk;
 		return db.all(query, param, (err, rows) => {
@@ -50,7 +50,7 @@ router.get("/all/detailed", async (req, res) => {
 			// todo handle
 			res.send(rows);
 		});
-	}else {
+	} else {
 		query = connection.queryPool.manufacturersDetailed();
 		return db.all(query, (err, rows) => {
 			if (err) {
@@ -63,10 +63,22 @@ router.get("/all/detailed", async (req, res) => {
 	}
 });
 
+router.get("/all/country", (req, res) => {
+	db.serialize(() => {
+		db.all("select * from country", (err, rows) => {
+			if (err) {
+				console.error(err);
+				res.status(500).send(err);
+			}
+			// todo handle
+			res.send(rows);
+		});
+	});
+});
 
 router.get("/one", async (req, res) => {
 	db.serialize(() => {
-		db.get("select * from manufacturer where pkManufacturer = ?", req.query.pkManufacturer, (err, row) => {
+		db.get("select * from manufacturer where pkManufacturer = ?", req.query.pk, (err, row) => {
 			if (err) {
 				console.error(err);
 				res.status(500).send(err);
@@ -102,14 +114,30 @@ router.put("/update", async (req, res) => {
 });
 
 router.delete("/delete", async (req, res) => {
+	const handleError = err => {
+		if (err) {
+			console.error(err);
+			return true;
+		}
+		return false;
+	};
 	db.serialize(() => {
-		db.run("delete from manufacturer where pkManufacturer = ?", req.body.pkManufacturer, err => {
-			if (err) {
-				console.error(err);
-				res.status(500).send(err);
+		db.run("delete from manufacturer where pkManufacturer = ?", req.body.pk, err => {
+			if (handleError(err)) {
+				return res.status(500).send(err);
 			}
+			db.run("delete from brewer where pkManufacturer = ?", req.body.pk, err => {
+				if (handleError(err)) {
+					return res.status(500).send(err);
+				}
+				db.run("delete from beer where pkManufacturer = ?", req.body.pk, err => {
+					if (handleError(err)) {
+						return res.status(500).send(err);
+					}
+					res.send({ status: "OK" });
+				});
+			});
 			// todo handle
-			res.send({ status: "OK" });
 		});
 	});
 });

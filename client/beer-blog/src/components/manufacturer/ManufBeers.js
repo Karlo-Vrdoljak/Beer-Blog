@@ -4,11 +4,12 @@ import Loader from "components/loader/Loader";
 import { observer } from "mobx-react";
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import AppService from "service/app.service";
+import ServiceContext from "context/ServiceProvider";
 
-const appService = new AppService();
+
 
 const ManufBeers = observer(() => {
+	const appService = React.useContext(ServiceContext);
 	// @ts-ignore
 	let { id } = useParams();
 
@@ -24,7 +25,7 @@ const ManufBeers = observer(() => {
         if (beers.length > 0) {
             return (
                 <Box m="4" h="90vh" overflow="auto">
-                    <SimpleGrid m="4" columns={[1, 2, 3]} spacing="6">
+                    <SimpleGrid m="4" justifyItems="center" columns={[1, 2, 3]} spacing="6">
                         {beers.map(beer => (
                             <Beer key={beer.pkBeer} beer={{...beer, hideManufLink: true}} />
                         ))}
