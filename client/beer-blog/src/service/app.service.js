@@ -1,4 +1,6 @@
 import BeerService from "./beer.service";
+import BeerTypeService from "./beerType.service";
+import CurrencyService from "./currency.service";
 import ManufService from "./manuf.service";
 
 const { default: Config } = require("./config");
@@ -8,6 +10,8 @@ class AppService {
 		this.config = new Config();
 		this.beerService = new BeerService(JSON.parse(JSON.stringify(this.config)));
 		this.manufService = new ManufService(JSON.parse(JSON.stringify(this.config)));
+		this.BeerTypeService = new BeerTypeService(JSON.parse(JSON.stringify(this.config)));
+		this.currencyService = new CurrencyService(JSON.parse(JSON.stringify(this.config)));
 	}
 
 	login(user) {

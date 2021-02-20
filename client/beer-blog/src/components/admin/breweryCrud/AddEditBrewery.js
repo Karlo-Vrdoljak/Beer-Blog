@@ -5,6 +5,7 @@ import ServiceContext from "context/ServiceProvider";
 import { Field, Form, Formik } from "formik";
 import React, { useEffect, useState } from "react";
 import * as Yup from "yup";
+import { linkTest } from "./linkTest";
 
 function CountryOptions() {
 	const appService = React.useContext(ServiceContext);
@@ -74,12 +75,6 @@ function switchFormTypeProps(type, key) {
 }
 
 function AddEditBrewery(props) {
-	const linkTest = function (value) {
-		if (value) {
-			return value.startsWith("http");
-		}
-		return true;
-	};
 	const appService = React.useContext(ServiceContext);
 	const auth = React.useContext(AuthContext);
 	const toast = useToast();

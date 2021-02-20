@@ -171,9 +171,10 @@ const connection = {
 			m.pageUrl as manufPageUrl,
 			m.name as manufName,
 			co.name as countryName,
-			co.code as countryCode
+			co.code as countryCode,
+			co.pkCountry
 			from beer b
-			left join beerType bt on bt.pkBeerType = b.pkBeer
+			left join beerType bt on bt.pkBeerType = b.pkBeerType
 			left join currency c on c.pkCurrency = b.pkCurrency
 			left join manufacturer m on m.pkManufacturer = b.pkManufacturer
 			left join country co on m.pkCountry = co.pkCountry`

@@ -86,10 +86,11 @@ router.put("/update", async (req, res) => {
 			if (req.body.price) row.price = req.body.price;
 			if (req.body.pkCurrency) row.pkCurrency = req.body.pkCurrency;
 			if (req.body.alcoholPerc) row.alcoholPerc = req.body.alcoholPerc;
-			if (req.body.pkBeerType) row.pkBeerType = req.body.pkBeerType;
-			if (req.body.pkManufacturer) row.pkManufacturer = req.body.pkManufacturer;
+			if (req.body.pkBeerType) row.pkBeerType = parseInt(req.body.pkBeerType);
+			if (req.body.pkManufacturer) row.pkManufacturer = parseInt(req.body.pkManufacturer);
 			if (req.body.name) row.name = req.body.name;
 			if (req.body.imageUrl) row.imageUrl = req.body.imageUrl;
+			console.log(row);
 			db.prepare("update beer set price = ?, pkCurrency = ?, alcoholPerc = ?, pkBeerType = ?, pkManufacturer = ?, name = ?, imageUrl = ? where pkBeer = ?", row.price, row.pkCurrency, row.alcoholPerc, row.pkBeerType, row.pkManufacturer, row.name, row.imageUrl, row.pkBeer)
 				.run()
 				.finalize(err => {
@@ -106,7 +107,7 @@ router.put("/update", async (req, res) => {
 
 router.delete("/delete", async (req, res) => {
 	db.serialize(() => {
-		db.run("delete from beer where pkBeer = ?", req.body.pkBeer, err => {
+		db.run("delete from beer where pkBeer = ?", req.body.pk, err => {
 			if (err) {
 				console.error(err);
 				res.status(500).send(err);

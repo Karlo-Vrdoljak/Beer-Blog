@@ -6,6 +6,7 @@ import ServiceContext from "context/ServiceProvider";
 import { observer } from "mobx-react";
 import React, { useEffect, useState } from "react";
 import { FaEye, FaSyncAlt } from "react-icons/fa";
+import AddEditBeer from "./beersCrud/AddEditBeer";
 import DeleteBeer from "./beersCrud/DeleteBeer";
 import ViewBeer from "./beersCrud/ViewBeer";
 import { CrudMenu } from "./CrudMenu";
@@ -60,13 +61,6 @@ const AdminBeers = observer(() => {
 		setselectedRow(row);
 		console.log(selectedRowIndex, selectedRow);
 	};
-	const openModal = type => {
-		switch (type) {
-			case "read": {
-				return viewBeer.onOpen();
-			}
-		}
-	};
 
 	const appService = React.useContext(ServiceContext);
 
@@ -74,6 +68,7 @@ const AdminBeers = observer(() => {
 		return new Promise((resolve, reject) => {
 			appService.beerService.getBeersDetailed().then(data => {
 				setbeers(data);
+				if(selectedRowIndex != -1) setselectedRow(data[selectedRowIndex]);
 				resolve();
 			});
 		});
@@ -100,7 +95,7 @@ const AdminBeers = observer(() => {
 							</Box>
 							<Box>
 								<CrudMenu text="beer" add={addBeer} delete={deleteBeer} switchMode={switchMode}></CrudMenu>
-								<Button onClick={() => openModal("read")} ml={3} rightIcon={<Icon as={FaEye} />} colorScheme="cyan" mr={3}>
+								<Button onClick={() => viewBeer.onOpen()} ml={3} rightIcon={<Icon as={FaEye} />} colorScheme="cyan" mr={3}>
 									View
 								</Button>
 								<Button onClick={loadData}  rightIcon={<Icon as={FaSyncAlt} />} colorScheme="blue" mr={3}>
@@ -121,6 +116,7 @@ const AdminBeers = observer(() => {
 				</Table>
 				<ViewBeer beer={selectedRow} isOpen={viewBeer.isOpen} onClose={viewBeer.onClose}></ViewBeer>
                 <DeleteBeer refresh={loadData} isOpen={deleteBeer.isOpen} onClose={deleteBeer.onClose} beer={selectedRow}></DeleteBeer>
+				<AddEditBeer refresh={loadData} beer={editmode? selectedRow: null} isOpen={addBeer.isOpen} onClose={addBeer.onClose}></AddEditBeer>
 			</>
 		);
 	} else {

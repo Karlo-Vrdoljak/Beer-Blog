@@ -27,8 +27,7 @@ function DeleteBeer(props) {
 	const deleteBeer = () => {
 		return new Promise(resolve => {
 
-            return;
-			appService.beerService.deleteBeer(beer.pkBeer, auth.getBearerToken()).then(() => {
+			appService.beerService.delete(beer.pkBeer, auth.getBearerToken()).then(() => {
 				props.refresh();
 				toast({
 					title: "If you say so!",

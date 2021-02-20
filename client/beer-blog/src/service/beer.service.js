@@ -23,6 +23,33 @@ class BeerService {
 			.then(response => response.json())
 			.then(data => data);
     }
+    update(data,auth) {
+        return fetch(this.config.API_URL + "update", {
+            method: "PUT",
+            headers: {'Content-type': 'application/json', Authorization: auth },
+			body: JSON.stringify(data),
+		})
+			.then(response => response.json())
+			.then(data => data);
+    }
+    insert(data,auth) {
+        return fetch(this.config.API_URL + "insert", {
+            method: "POST",
+            headers: {'Content-type': 'application/json', Authorization: auth },
+			body: JSON.stringify(data),
+		})
+			.then(response => response.json())
+			.then(data => data);
+    }
+    delete(id, auth) {
+        return fetch(this.config.API_URL + "delete", {
+			method: "DELETE",
+			headers: { "Content-type": "application/json", Authorization: auth },
+			body: JSON.stringify({ pk: id }),
+		})
+			.then(response => response.json())
+			.then(data => data);
+    }
 }
 
 export default BeerService;

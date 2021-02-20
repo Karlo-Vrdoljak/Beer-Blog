@@ -92,7 +92,7 @@ const Manufacturers = observer(() => {
 		if (manuf.length > 0) {
 			return (
 				<SimpleGrid m="4" justifyItems="center" columns={[1, 2, 3]} spacing="6">
-					{manuf.map(m => <Manufacturer  {...m} />)}
+					{manuf.map(m => <Manufacturer key={m.pkManufacturer}  {...m} />)}
 				</SimpleGrid>
 			);
 		} else {

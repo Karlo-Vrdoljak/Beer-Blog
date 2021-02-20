@@ -1,4 +1,4 @@
-import { Button, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay } from "@chakra-ui/react";
+import { Box, Button, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay } from "@chakra-ui/react";
 import React from "react";
 
 export function GenericDelete(props) {
@@ -10,7 +10,7 @@ export function GenericDelete(props) {
 			<ModalContent>
 				<ModalHeader>Delete Brewery</ModalHeader>
 				<ModalCloseButton />
-				<ModalBody pb={6}>Are you sure you want to delete {props.text}</ModalBody>
+				<ModalBody pb={6} fontSize="lg">Are you sure you want to delete <Box as="span" fontWeight="bold" color="yellow.400">{props.text}</Box>!?</ModalBody>
 				<ModalFooter>
 					<Button mr={3} ref={initialRef} onClick={props.onClose}>
 						Cancel
