@@ -37,17 +37,32 @@ router.get("/all", async (req, res) => {
 });
 
 router.get('/all/detailed', async (req, res) => {
-	const query = connection.queryPool.allBeersDetailed();
-	db.serialize(() => {
-		db.all(query, (err, rows) => {
-			if (err) {
-				console.error(err);
-				res.status(500).send(err);
-			}
-			// todo handle
-			res.send(rows);
+	console.log(req.originalUrl, req.query.pkUser);
+	if(req.query && req.query.pkUser) {
+		const query = connection.queryPool.allBeersDetailedForUser();
+		db.serialize(() => {
+			db.all(query, req.query.pkUser, (err, rows) => {
+				if (err) {
+					console.error(err);
+					res.status(500).send(err);
+				}
+				// todo handle
+				res.send(rows);
+			});
 		});
-	});
+	} else {
+		const query = connection.queryPool.allBeersDetailed();
+		db.serialize(() => {
+			db.all(query, (err, rows) => {
+				if (err) {
+					console.error(err);
+					res.status(500).send(err);
+				}
+				// todo handle
+				res.send(rows);
+			});
+		});
+	}
 });
 
 router.get('/one/detailed', async (req, res) => {

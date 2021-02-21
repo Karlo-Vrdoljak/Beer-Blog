@@ -37,6 +37,8 @@ router.get("/all", async (req, res) => {
 });
 
 router.get("/all/detailed", async (req, res) => {
+	console.log(req.query);
+
 	let query = "";
 	let param = null;
 	if (req.query && req.query.pk) {
@@ -50,7 +52,21 @@ router.get("/all/detailed", async (req, res) => {
 			// todo handle
 			res.send(rows);
 		});
-	} else {
+	} else if (req.query && req.query.pkUser) {
+		// inner join brewer b on b.pkUser = 5 and m.pkManufacturer = b.pkManufacturer;
+		query = connection.queryPool.manufacturersDetailedForUser();
+		console.log(query);
+		return db.all(query, req.query.pkUser, (err, rows) => {
+			if (err) {
+				console.error(err);
+				res.status(500).send(err);
+			}
+			// todo handle
+			res.send(rows);
+		});
+	} 
+	
+	else {
 		query = connection.queryPool.manufacturersDetailed();
 		return db.all(query, (err, rows) => {
 			if (err) {
@@ -121,7 +137,7 @@ router.delete("/delete", async (req, res) => {
 		}
 		return false;
 	};
-	db.serialize(() => {
+	const deleteManufacturer = () => {
 		db.run("delete from manufacturer where pkManufacturer = ?", req.body.pk, err => {
 			if (handleError(err)) {
 				return res.status(500).send(err);
@@ -138,6 +154,17 @@ router.delete("/delete", async (req, res) => {
 				});
 			});
 			// todo handle
+		});
+	};
+
+	db.serialize(() => {
+		db.get("select * from manufacturer m inner join beer b on m.pkmanufacturer = b.pkmanufacturer where m.pkmanufacturer = ?", req.body.pk,  (err,row) => {
+			console.log(err,row);
+			if(row) {
+				res.status(200).send({status: "CANNOT_DELETE"})
+			} else {
+				deleteManufacturer();
+			}
 		});
 	});
 });

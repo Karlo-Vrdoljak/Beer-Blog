@@ -179,7 +179,10 @@ const connection = {
 			left join manufacturer m on m.pkManufacturer = b.pkManufacturer
 			left join country co on m.pkCountry = co.pkCountry`
 		},
-
+		allBeersDetailedForUser: function() {
+			return this.allBeersDetailed() + `
+			inner join brewer br on br.pkUser = ? and m.pkManufacturer = br.pkManufacturer;`;
+		},
 		oneBeerDetailed: function () {
 			return this.allBeersDetailed() + `
 				where b.pkBeer = ?`;
@@ -207,6 +210,10 @@ const connection = {
 		manufacturersBeersDetailed: function() {
 			return this.allBeersDetailed() + `
 				where m.pkManufacturer = ?`;
+		},
+		manufacturersDetailedForUser: function(pkUser) {
+			return this.manufacturersDetailed() + `
+				inner join brewer b on b.pkUser = ? and m.pkManufacturer = b.pkManufacturer;`;
 		}
 
 	}

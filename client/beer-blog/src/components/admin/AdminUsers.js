@@ -6,6 +6,8 @@ import { observer } from "mobx-react";
 import React, { useEffect, useState } from "react";
 import { FaCheck, FaEye, FaSyncAlt,FaTimes,Switch } from "react-icons/fa";
 import { CrudMenu } from "./CrudMenu";
+import DeleteUser from "./userCrud/DeleteUser";
+import EditUser from "./userCrud/EditUser";
 
 function TableHeader() {
 	return (
@@ -47,7 +49,7 @@ const AdminUsers = observer(() => {
     const [users, setusers] = useState(null);
     const [editmode, seteditmode] = useState(false);
     const deleteUser = useDisclosure();
-    const editUser = useDisclosure();
+	const editUser = useDisclosure();
 	const onRowSelect = (row, i) => {
 		setselectedRowIndex(i);
 		setselectedRow(row);
@@ -61,6 +63,7 @@ const AdminUsers = observer(() => {
 		return new Promise((resolve, reject) => {
 			appService.getUsers().then(data => {
 				setusers(data);
+				if(selectedRowIndex != -1) setselectedRow(data[selectedRowIndex]);
 				resolve();
 			});
 		});
@@ -103,6 +106,9 @@ const AdminUsers = observer(() => {
 						<TableHeader></TableHeader>
 					</Tfoot>
 				</Table>
+				<EditUser refresh={loadData} user={editmode? selectedRow: null} isOpen={editUser.isOpen} onClose={editUser.onClose}></EditUser>
+				<DeleteUser refresh={loadData} isOpen={deleteUser.isOpen} onClose={deleteUser.onClose} user={selectedRow}></DeleteUser>
+				
 			</>
 		);
 	} else {

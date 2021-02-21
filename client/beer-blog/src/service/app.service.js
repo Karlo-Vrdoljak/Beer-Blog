@@ -28,10 +28,42 @@ class AppService {
 			.then(response => response.json())
 			.then(data => data);
 	}
+	getUserByUsername(uname) {
+		return fetch(this.config.API_URL + '/user/one/username?' + new URLSearchParams({username: uname}))
+			.then(response => response.json())
+			.then(data => data);
+	}
 	registerBrewey(data, auth) {
 		return fetch(this.config.API_URL + "/brewer/insert", {
             method: "POST",
             headers: {'Content-type': 'application/json', Authorization: auth },
+			body: JSON.stringify(data),
+		})
+			.then(response => response.json())
+			.then(data => data);
+	}
+	updateUser(data,auth){
+		return fetch(this.config.API_URL + "/user/update", {
+            method: "PUT",
+            headers: {'Content-type': 'application/json', Authorization: auth },
+			body: JSON.stringify(data),
+		})
+			.then(response => response.json())
+			.then(data => data);
+	}
+	deleteUser(id, auth) {
+		return fetch(this.config.API_URL + "/user/delete", {
+			method: "DELETE",
+			headers: { "Content-type": "application/json", Authorization: auth },
+			body: JSON.stringify({ pk: id }),
+		})
+			.then(response => response.json())
+			.then(data => data);
+	}
+	registerUser(data) {
+		return fetch(this.config.API_URL + "/security/register", {
+            method: "POST",
+            headers: {'Content-type': 'application/json'},
 			body: JSON.stringify(data),
 		})
 			.then(response => response.json())

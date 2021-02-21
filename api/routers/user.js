@@ -49,14 +49,30 @@ router.get("/one", async (req, res) => {
 	});
 });
 
+router.get("/one/username", async (req, res) => {
+	console.log(req.query);
+	db.serialize(() => {
+		db.get("select * from user where username = ?", req.query.username, (err, row) => {
+			console.log(row);
+			if (err) {
+				console.error(err);
+				res.status(500).send(err);
+			}
+			// todo handle
+			res.send(row ? row: {});
+		});
+	});
+});
+
 router.put("/update", async (req, res) => {
 	db.serialize(() => {
 		db.get("select * from user where pkUser = ?", req.body.pkUser, (err, row) => {
 			if (req.body.username) row.username = req.body.username;
 			if (req.body.password) row.password = req.body.password;
-			if (req.body.isAdmin) row.isAdmin = req.body.isAdmin;
+			if (req.body.isAdmin == 1 || req.body.isAdmin == 0) row.isAdmin = req.body.isAdmin;
 			if (req.body.email) row.email = req.body.email;
-			if (req.body.isActive) row.isActive = req.body.isActive;
+			if (req.body.isActive == 1 || req.body.isActive == 0) row.isActive = req.body.isActive;
+			console.log("req.body", req.body, "row", row);
 			db.prepare("update user set username = ?, password = ?, isAdmin = ?, email = ?, isActive = ? where pkUser = ?", row.username, row.password, row.isAdmin, row.email, row.isActive, row.pkUser)
 				.run()
 				.finalize(err => {
@@ -73,7 +89,7 @@ router.put("/update", async (req, res) => {
 
 router.delete("/delete", async (req, res) => {
 	db.serialize(() => {
-		db.run("delete from user where pkUser = ?", req.body.pkUser, err => {
+		db.run("delete from user where pkUser = ?", req.body.pk, err => {
 			if (err) {
 				console.error(err);
 				res.status(500).send(err);

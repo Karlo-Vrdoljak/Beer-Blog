@@ -6,9 +6,27 @@ import { Field, Form, Formik } from "formik";
 import React from "react";
 import * as Yup from "yup";
 import { linkTest } from "../breweryCrud/linkTest";
+import { ErrorMessage } from "./ErrorMessage";
 
-function ErrorMessage(props) {
-	return <Box color="red.400">{props.errors && props.touched ? <div>{props.errors}</div> : null}</Box>;
+function ChooseBrewery(props) {
+	const auth = React.useContext(AuthContext);
+	if (auth.isAdmin()) {
+		return (
+			<Box my="2">
+				<FormLabel>Brewer</FormLabel>
+				<Field name="pkManufacturer" as={Select} placeholder="Select the beer's brewer">
+					{props.manufacturers.map(c => (
+						<option key={c.pkManufacturer} value={c.pkManufacturer} name={c.name}>
+							{c.name}
+						</option>
+					))}
+				</Field>
+				<ErrorMessage errors={props.formProps.errors["pkManufacturer"]} touched={props.formProps.touched["pkManufacturer"]}></ErrorMessage>
+			</Box>
+		);
+	} else {
+		return <></>;
+	}
 }
 
 function AddEditBeer(props) {
@@ -113,49 +131,59 @@ function AddEditBeer(props) {
 							// same shape as initial values
 							let result = JSON.parse(JSON.stringify(values));
 							console.log(result);
-							if(props.beer) {
-								appService.beerService.update({
-									price: result.beerPrice,
-									pkCurrency: result.pkCurrency,
-									alcoholPerc: result.beerAlcoholPerc,
-									pkBeerType: result.pkBeerType,
-									name: result.beerName,
-									imageUrl: result.beerImageUrl,
-									pkBeer: props.beer.pkBeer,
-									pkManufacturer: result.pkManufacturer,
-								}, auth.getBearerToken()).then(() => {
-									console.log(result);
-									props.refresh();
-									props.onClose();
-									toast({
-										title: "Success!",
-										description: "You have updated " + result.beerName + " successfully!",
-										status: "success",
-										duration: 5000,
-										isClosable: true,
+							if (props.beer) {
+								appService.beerService
+									.update(
+										{
+											price: result.beerPrice,
+											pkCurrency: result.pkCurrency,
+											alcoholPerc: result.beerAlcoholPerc,
+											pkBeerType: result.pkBeerType,
+											name: result.beerName,
+											imageUrl: result.beerImageUrl,
+											pkBeer: props.beer.pkBeer,
+											pkManufacturer: result.pkManufacturer,
+										},
+										auth.getBearerToken()
+									)
+									.then(() => {
+										console.log(result);
+										props.refresh();
+										props.onClose();
+										toast({
+											title: "Success!",
+											description: "You have updated " + result.beerName + " successfully!",
+											status: "success",
+											duration: 5000,
+											isClosable: true,
+										});
 									});
-								})
 							} else {
-								appService.beerService.insert({
-									price: result.beerPrice,
-									pkCurrency: result.pkCurrency,
-									alcoholPerc: result.beerAlcoholPerc,
-									pkBeerType: result.pkBeerType,
-									name: result.beerName,
-									imageUrl: result.beerImageUrl,
-									pkManufacturer: result.pkManufacturer,
-								}, auth.getBearerToken()).then(() => {
-									console.log(result);
-									props.refresh();
-									props.onClose();
-									toast({
-										title: "Success!",
-										description: "You have added your new beer " + result.beerName + " successfully!",
-										status: "success",
-										duration: 5000,
-										isClosable: true,
+								appService.beerService
+									.insert(
+										{
+											price: result.beerPrice,
+											pkCurrency: result.pkCurrency,
+											alcoholPerc: result.beerAlcoholPerc,
+											pkBeerType: result.pkBeerType,
+											name: result.beerName,
+											imageUrl: result.beerImageUrl,
+											pkManufacturer: result.pkManufacturer,
+										},
+										auth.getBearerToken()
+									)
+									.then(() => {
+										console.log(result);
+										props.refresh();
+										props.onClose();
+										toast({
+											title: "Success!",
+											description: "You have added your new beer " + result.beerName + " successfully!",
+											status: "success",
+											duration: 5000,
+											isClosable: true,
+										});
 									});
-								})
 							}
 						}}
 					>
@@ -200,17 +228,7 @@ function AddEditBeer(props) {
 										</Field>
 										<ErrorMessage errors={formProps.errors["pkCurrency"]} touched={formProps.touched["pkCurrency"]}></ErrorMessage>
 									</Box>
-									<Box my="2">
-										<FormLabel>Brewer</FormLabel>
-										<Field name="pkManufacturer" as={Select} placeholder="Select the beer's brewer">
-											{beerInfo.manufacturers.map(c => (
-												<option key={c.pkManufacturer} value={c.pkManufacturer} name={c.name}>
-													{c.name}
-												</option>
-											))}
-										</Field>
-										<ErrorMessage errors={formProps.errors["pkManufacturer"]} touched={formProps.touched["pkManufacturer"]}></ErrorMessage>
-									</Box>
+									<ChooseBrewery formProps={formProps} manufacturers={beerInfo.manufacturers}></ChooseBrewery>
 									<Box my="2" d="flex" justifyContent="center">
 										<Image borderRadius="full" fallbackSrc="https://via.placeholder.com/100" boxSize="100px" objectFit="cover" src={currentImage.beerType} alt="Beer Type" />
 									</Box>

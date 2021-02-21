@@ -2,9 +2,10 @@
 import { AddIcon, ChevronDownIcon, DeleteIcon, EditIcon } from "@chakra-ui/icons";
 import { Avatar, Box, Button, Flex, Icon, Menu, MenuButton, MenuItem, MenuList, Table, TableCaption, Tbody, Td, Tfoot, Th, Thead, Tr, useDisclosure } from "@chakra-ui/react";
 import Loader from "components/loader/Loader";
+import AuthContext from "context/AuthProvider";
 import ServiceContext from "context/ServiceProvider";
 import { observer } from "mobx-react";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { FaEye, FaSyncAlt } from "react-icons/fa";
 import AddEditBeer from "./beersCrud/AddEditBeer";
 import DeleteBeer from "./beersCrud/DeleteBeer";
@@ -51,7 +52,8 @@ function TableBody(props) {
 const AdminBeers = observer(() => {
 	const [selectedRowIndex, setselectedRowIndex] = useState(-1);
 	const [selectedRow, setselectedRow] = useState(null);
-    const [beers, setbeers] = useState(null);
+	const [beers, setbeers] = useState(null);
+	const auth = useContext(AuthContext);
     const [editmode, seteditmode] = useState(false);
 	const viewBeer = useDisclosure();
 	const addBeer = useDisclosure();
@@ -66,7 +68,7 @@ const AdminBeers = observer(() => {
 
 	const loadData = () => {
 		return new Promise((resolve, reject) => {
-			appService.beerService.getBeersDetailed().then(data => {
+			appService.beerService.getBeersDetailed(auth.isAdmin()? null: auth.user.auth.data.pkUser || null).then(data => {
 				setbeers(data);
 				if(selectedRowIndex != -1) setselectedRow(data[selectedRowIndex]);
 				resolve();

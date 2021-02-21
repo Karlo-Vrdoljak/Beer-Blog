@@ -12,7 +12,7 @@ router.post("/login", async (req, res) => {
 				try {
 					if (req.body && req.body.username && req.body && req.body.password) {
 						let loginResult = await connection.userLogin(req.body);
-						if (loginResult == false) {
+						if (loginResult == false || user.isActive == 0) {
 							return throwLogin();
 						}
 						let token = connection.createToken({ username: user.username, pkUser: user.pkUser, email: user.email, isAdmin: user.isAdmin, isActive: user.isActive });
@@ -47,6 +47,11 @@ router.post("/register", async (req, res) => {
 			.insertUser(req.body)
 			.then(async () => {
 				let resultUser = await connection.getUserByUsername(req.body.username);
+				db.run("INSERT INTO [brewer] (pkUser,pkManufacturer) values (?,?)", resultUser.pkUser, req.body.pkManufacturer, function (err) {
+					if (err) {
+						console.error(err);
+					}
+				});
 				res.status(201).send(resultUser);
 			})
 			.catch(err => throwErr(err));

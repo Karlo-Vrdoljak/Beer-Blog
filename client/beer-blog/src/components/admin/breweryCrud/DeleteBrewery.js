@@ -27,15 +27,25 @@ function DeleteBrewery(props) {
 	const deleteBrewery = () => {
 		return new Promise(resolve => {
 			console.log("deleted!");
-			appService.manufService.deleteManufacturer(brewery.pkManufacturer, auth.getBearerToken()).then(() => {
+			appService.manufService.deleteManufacturer(brewery.pkManufacturer, auth.getBearerToken()).then((body) => {
 				props.refresh();
-				toast({
-					title: "If you say so!",
-					description: "Brewery successfully deleted!",
-					status: "success",
-					duration: 5000,
-					isClosable: true,
-				});
+				if(body.status === 'CANNOT_DELETE') {
+					toast({
+						title: "You cannot delete this brewery!",
+						description: "You need to remove all it's beers first!",
+						status: "error",
+						duration: 5000,
+						isClosable: true,
+					});
+				} else {
+					toast({
+						title: "If you say so!",
+						description: "Brewery successfully deleted!",
+						status: "success",
+						duration: 5000,
+						isClosable: true,
+					});
+				}
 				resolve();
 			});
 		});

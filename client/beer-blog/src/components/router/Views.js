@@ -51,10 +51,10 @@ const Views = observer(() => {
 			</Route>
 			<Route path="/manufacturer/beers/:id" children={<ManufBeers />} />
 			<Route path="/beer/:id" children={<SingleBeer />} />
-			<PrivateRoute path="/admin/breweries" authed={auth.isAuthenticated() && auth.isAdmin()}>
+			<PrivateRoute path="/admin/breweries" authed={auth.isAuthenticated()}>
 				<Route path="/admin/breweries" component={AdminBreweries} />
 			</PrivateRoute>
-			<PrivateRoute path="/admin/beers" authed={auth.isAuthenticated() && auth.isAdmin()}>
+			<PrivateRoute path="/admin/beers" authed={auth.isAuthenticated()}>
 				<Route path="/admin/beers" component={AdminBeers} />
 			</PrivateRoute>
 			<PrivateRoute path="/admin/users" authed={auth.isAuthenticated() && auth.isAdmin()}>

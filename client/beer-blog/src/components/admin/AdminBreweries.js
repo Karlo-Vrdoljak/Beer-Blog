@@ -1,9 +1,10 @@
 // @ts-nocheck
 import { Avatar, Box, Button, Flex, Icon, Table, TableCaption, Tbody, Td, Tfoot, Th, Thead, Tr, useDisclosure } from "@chakra-ui/react";
 import Loader from "components/loader/Loader";
+import AuthContext from "context/AuthProvider";
 import ServiceContext from "context/ServiceProvider";
 import { observer } from "mobx-react";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { FaEye, FaSyncAlt } from "react-icons/fa";
 import AddEditBrewery from "./breweryCrud/AddEditBrewery";
 import DeleteBrewery from "./breweryCrud/DeleteBrewery";
@@ -53,6 +54,7 @@ const AdminBreweries = observer(() => {
 	const deleteBrewery = useDisclosure();
 	const registerBrewey = useDisclosure();
 	const [formFistStep, setformFistStep] = useState();
+	const auth = useContext(AuthContext);
 
 	const [selectedRowIndex, setselectedRowIndex] = useState(-1);
 	const [selectedRow, setselectedRow] = useState(null);
@@ -68,8 +70,10 @@ const AdminBreweries = observer(() => {
 
 	const loadData = () => {
 		return new Promise((resolve, reject) => {
-			appService.manufService.getBeerManufacturersDetailed().then(data => {
+			console.log(auth.user.auth.data.pkUser);
+			appService.manufService.getBeerManufacturersDetailed(auth.isAdmin()? null: auth.user.auth.data.pkUser || null).then(data => {
 				setManuf(data);
+				if(selectedRowIndex != -1) setselectedRow(data[selectedRowIndex]);
 				resolve();
 			});
 		});

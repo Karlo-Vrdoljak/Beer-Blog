@@ -1,4 +1,5 @@
-import { Box, Button, Flex, Heading, Spacer } from "@chakra-ui/react";
+import { Box, Button, Flex, useDisclosure, Heading, Spacer } from "@chakra-ui/react";
+import RegisterUser from "components/admin/userCrud/RegisterUser";
 import AppRouter from "components/router/Router";
 import AuthContext from "context/AuthProvider";
 import { observer } from "mobx-react";
@@ -11,7 +12,10 @@ function LoggedInAs(props) {
 	if (loginData && loginData.auth) {
 		return (
 			<Heading pl="2" size="md">
-				 &bull; <Box as="span" color="yellow.300">{loginData.username}</Box>
+				&bull;{" "}
+				<Box as="span" color="yellow.300">
+					{loginData.username}
+				</Box>
 			</Heading>
 		);
 	} else {
@@ -20,11 +24,13 @@ function LoggedInAs(props) {
 }
 
 function SignIn() {
+	const register = useDisclosure();
 	return (
 		<>
-			<Button colorScheme="yellow" mr="4">
+			<Button colorScheme="yellow" mr="4" onClick={register.onOpen}>
 				Sign Up
 			</Button>
+			<RegisterUser isOpen={register.isOpen} onClose={register.onClose}></RegisterUser>
 			<LoginDrawer></LoginDrawer>
 		</>
 	);

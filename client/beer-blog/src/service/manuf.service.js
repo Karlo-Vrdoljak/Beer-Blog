@@ -19,8 +19,14 @@ class ManufService {
 			.then(response => response.json())
 			.then(data => data);
 	};
-	getBeerManufacturersDetailed = function () {
-		return fetch(this.config.API_URL + "all/detailed")
+	getBeerManufacturersDetailed = function (pkUser = null) {
+		let query = '';
+		if(pkUser == null) {
+			query = this.config.API_URL + "all/detailed";
+		} else {
+			query = this.config.API_URL + "all/detailed?"  + new URLSearchParams({ pkUser: pkUser });
+		}
+		return fetch(query)
 			.then(response => response.json())
 			.then(data => data);
 	};
